@@ -1,0 +1,345 @@
+/* =====================
+   ROOT DASHBOARD LAYOUT
+===================== */
+
+.dashboard {
+  padding: 1.5rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc, #eef2f7);
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =====================
+   HEADER
+===================== */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dashboard-header div {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-header button {
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-header button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* =====================
+   FILTERS (UPDATED 🔥)
+===================== */
+
+.filters {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.filters input,
+.filters select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.9rem;
+  outline: none;
+  background: white;
+  flex: 1;
+  min-width: 140px;
+}
+.filter-divider {
+  width: 1px;
+  background: #cbd5e1;
+  margin: 0 0.6rem;
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* =====================
+   INFO / ERROR
+===================== */
+
+.info {
+  text-align: center;
+  color: #64748b;
+  margin: 1rem 0;
+}
+
+.error {
+  text-align: center;
+  color: #dc2626;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+/* =====================
+   GRID
+===================== */
+
+.grid {
+  display: grid;
+  /* Three columns on desktop, minimum card width of 250px */
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* =====================
+   CARD
+===================== */
+
+.card {
+  background: white;
+  padding: 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction:column;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #05060d;
+}
+
+.card p {
+  font-size: 0.9rem;
+  /* color: #475569; */
+}
+
+/* =====================
+   ACTION BUTTONS
+===================== */
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.actions button {
+  flex: 1;
+  padding: 0.55rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actions button:first-child {
+  background: #0ea5e9;
+  color: white;
+}
+
+.actions button:first-child:hover {
+  background: #0284c7;
+}
+
+.actions button:last-child {
+  background: #dc2626;
+  color: white;
+}
+
+.actions button:last-child:hover {
+  background: #b91c1c;
+}
+
+/* =====================
+   PAGINATION
+===================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.pagination button:hover {
+  background: #1d4ed8;
+}
+
+.pagination button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-weight: 600;
+  color: #334155;
+}
+
+/* =====================
+   RESPONSIVE 🔥
+===================== */
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+/* =====================
+   ANALYTICS
+===================== */
+
+.analytics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-analytics {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease;
+}
+
+.card-analytics:hover {
+  transform: translateY(-3px);
+}
+
+.card-analytics h4 {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.card-analytics p {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0f172a;
+}
+.dark {
+  background: #455372;
+  color: #e2e8f0;
+}
+.dark .card,
+.dark .card-analytics {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+}
+.dark .card h3 {
+  font-size:1.5rem;
+  font-weight: 700;
+  color: #7b7c80;
+}
+
+.dark button {
+  background: #334155;
+}
+
+.dark button:hover {
+  background: #475569;
+}
+.dark .dashboard-header h2 {
+  color: #f1f5f9;
+}
+.theme{
+  background: #334155;
+  color: #e2e8f0;
+}
+ .dark .card-analytics p{
+  font-size: 2rem;
+  font-weight: bold;
+  color: #7b7c80;
+}
+.dark .pagination span {
+  font-weight: 600;
+  color: #c4c4c6;
+}
+.btn-loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.6s linear infinite;
+}
