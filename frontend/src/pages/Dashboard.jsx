@@ -95,7 +95,7 @@ useEffect(() => {
 }, [debouncedSearch, page, status, priority, sortBy, order]);
   useEffect(()=>{
     loadAnalytics();
-  },[])
+  },[status])
   
 
   // Delete Task
