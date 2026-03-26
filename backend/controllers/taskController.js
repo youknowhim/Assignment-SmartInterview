@@ -2,8 +2,20 @@ const Task = require("../models/Task");
 
 // CREATE
 exports.createTask = async (req, res) => {
+  let { status } = req.body;
+
+  // normalize status
+  if (status) {
+    status = status.trim();
+
+    if (status.toLowerCase() === "completed") status = "Completed";
+    if (status.toLowerCase() === "todo") status = "Todo";
+    if (status.toLowerCase() === "in progress") status = "In Progress";
+  }
+
   const task = await Task.create({
     ...req.body,
+    status,
     user: req.user.id
   });
 
