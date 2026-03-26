@@ -88,48 +88,46 @@ useEffect(() => {
 
   return () => clearTimeout(delay);
 }, [search]);
+  useEffect(() => {
+  loadAnalytics();
+}, []);
 
   // Reset page when filters change
 useEffect(() => {
   loadTasks();
 }, [debouncedSearch, page, status, priority, sortBy, order]);
-  useEffect(()=>{
-    loadAnalytics();
-  },[status])
+
   
 
   // Delete Task
-  const deleteTask = async (id) => {
-    try {
-      await fetch(`${Base_URL}/api/tasks/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      loadTasks();
-    } catch {
-      alert("Delete failed");
-    }
-  };
-  const toggleStatus = async (task) => {
-    const newStatus = task.status === "Completed" ? "Todo" : "Completed";
+const deleteTask = async (id) => {
+  await fetch(`${Base_URL}/api/tasks/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-    await fetch(`${Base_URL}/api/tasks/${task._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ status: newStatus })
-    });
+  await loadTasks();
+  await loadAnalytics();
+};
+const toggleStatus = async (task) => {
+  const newStatus =
+    task.status === "Completed" ? "Todo" : "Completed";
 
-    // update UI without reloading
-    setTasks(prev =>
-      prev.map(t =>
-        t._id === task._id ? { ...t, status: newStatus } : t
-      )
-    );
+  // 1. Update DB
+  await fetch(`${Base_URL}/api/tasks/${task._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ status: newStatus })
+  });
 
-  
+  // 2. Fetch updated tasks (ensures DB write finished)
+  await loadTasks();
+
+  // 3. THEN fetch analytics (guaranteed fresh data)
+  await loadAnalytics();
 };
   const loadAnalytics = async () => {
 
