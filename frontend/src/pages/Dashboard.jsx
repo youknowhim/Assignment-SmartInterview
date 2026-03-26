@@ -14,6 +14,7 @@ export default function Dashboard() {
 
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [analytics, setAnalytics] = useState({
@@ -31,59 +32,71 @@ export default function Dashboard() {
 
   // Load Tasks
   const loadTasks = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-      if (search) params.append("search", search);
-      if (status) params.append("status", status);
-      if (priority) params.append("priority", priority);
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (status) params.append("status", status);
+    if (priority) params.append("priority", priority);
 
-      params.append("page", page);
-      params.append("limit", 6);
-      params.append("sortBy", sortBy);
-      params.append("order", order);
+    params.append("page", page);
+    params.append("limit", 6);
+    params.append("sortBy", sortBy);
+    params.append("order", order);
 
-      const res = await fetch(`${Base_URL}/api/tasks?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    const res = await fetch(`${Base_URL}/api/tasks?${params}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-      if (!res.ok) throw new Error("Failed to fetch tasks");
+    if (!res.ok) throw new Error("Failed to fetch tasks");
 
-      const data = await res.json();
-      console.log(data);
+  const data = await res.json();
 
-      setTasks(data.tasks || []);
-      setTotalPages(data.totalPages || 1);
+let tasksData = data.tasks || [];
 
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+// Custom priority sort
+if (sortBy === "priority") {
+  const orderMap = { High: 3, Medium: 2, Low: 1 };
+
+  tasksData = tasksData.sort((a, b) =>
+    order === "asc"
+      ? orderMap[a.priority] - orderMap[b.priority]
+      : orderMap[b.priority] - orderMap[a.priority]
+  );
+}
+
+setTasks(tasksData);
+    setTotalPages(data.totalPages || 1);
+
+  } catch (err) {
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 //   dark mode toggle
 
 
-  // Debounced search + filters + pagination
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      loadTasks();
-    }, 400);
+  // Debounced
+useEffect(() => {
+  const delay = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 2000); // 
 
-    return () => clearTimeout(delay);
-  }, [search]);
+  return () => clearTimeout(delay);
+}, [search]);
 
   // Reset page when filters change
-  useEffect(() => {
-    loadTasks();
-    // setPage(1);
-  }, [page, status, priority,sortBy,order]);
+useEffect(() => {
+  loadTasks();
+}, [debouncedSearch, page, status, priority, sortBy, order]);
   useEffect(()=>{
     loadAnalytics();
   },[])
+  
 
   // Delete Task
   const deleteTask = async (id) => {
@@ -98,7 +111,7 @@ export default function Dashboard() {
     }
   };
   const toggleStatus = async (task) => {
-    const newStatus = task.status === "Done" ? "Todo" : "Done";
+    const newStatus = task.status === "Completed" ? "Todo" : "Completed";
 
     await fetch(`${Base_URL}/api/tasks/${task._id}`, {
       method: "PUT",
@@ -207,7 +220,7 @@ export default function Dashboard() {
           <option value="">All</option>
           <option>Todo</option>
           <option>In Progress</option>
-          <option>Done</option>
+          <option>Completed</option>
         </select>
 
         <select value={priority} onChange={(e) => setPriority(e.target.value)}>
@@ -237,7 +250,7 @@ export default function Dashboard() {
             <label>
   <input
     type="checkbox"
-    checked={t.status === "Done"}
+    checked={t.status === "Completed"}
     onChange={() => toggleStatus(t)}
   />
   &nbsp;Mark as Completed

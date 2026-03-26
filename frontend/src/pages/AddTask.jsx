@@ -95,7 +95,7 @@ export default function AddTask() {
         >
           <option>Todo</option>
           <option>In Progress</option>
-          <option>Done</option>
+          <option>Completed</option>
         </select>
 
         <button>Add Task</button>

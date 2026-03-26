@@ -115,7 +115,7 @@ export default function EditTask() {
         >
           <option>Todo</option>
           <option>In Progress</option>
-          <option>Done</option>
+          <option>Completed</option>
         </select>
 
         <button disabled={loading}>
