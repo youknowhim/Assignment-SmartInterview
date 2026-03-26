@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const Base_URL = "http://localhost:5000";
+  const Base_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
   const token = localStorage.getItem("token");
