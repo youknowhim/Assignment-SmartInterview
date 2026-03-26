@@ -93,9 +93,27 @@ useEffect(() => {
 useEffect(() => {
   loadTasks();
 }, [debouncedSearch, page, status, priority, sortBy, order]);
-  useEffect(() => {
-  loadAnalytics();
-}, []);
+useEffect(() => {
+  const total = tasks.length;
+
+  const completed = tasks.filter(
+    t => t.status === "Completed"
+  ).length;
+
+  const pending = total - completed;
+
+  const completionRate = total
+    ? (completed / total) * 100
+    : 0;
+
+  setAnalytics({
+    total,
+    completed,
+    pending,
+    completionRate
+  });
+
+}, [tasks]);
 
   
 
