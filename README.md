@@ -5,9 +5,9 @@ It includes authentication, task CRUD operations, filtering, sorting, pagination
 
 ---
 
-Deployed Link - https://assignment-smart-interview-pt97.vercel.app/
-login credentials for checking all functionalities 
-email-pallavrai23@gmail.com
+Deployed Link - https://assignment-smart-interview-pt97.vercel.app/<br>
+login credentials for checking all functionalities <br>
+email-pallavrai23@gmail.com<br>
 password-Pallav@123
 
 📌 Features
