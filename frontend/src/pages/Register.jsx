@@ -24,6 +24,10 @@ export default function Register() {
     else if (!regex.test(form.email)) {
       return setError('Invalid email format');
     }
+    else if (!/(?=.*[A-Z])(?=.*\d).{7,}/.test(form.password)) {
+  setError("Password must include 1 uppercase letter and 1 number and must be at least 7 characters long");
+  return;
+}
 
     try {
       setLoading(true);
