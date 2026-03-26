@@ -92,8 +92,10 @@ useEffect(() => {
   // Reset page when filters change
 useEffect(() => {
   loadTasks();
-  loadAnalytics();
 }, [debouncedSearch, page, status, priority, sortBy, order]);
+  useEffect(() => {
+  loadAnalytics();
+}, []);
 
   
 
