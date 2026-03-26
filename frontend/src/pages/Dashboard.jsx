@@ -88,10 +88,7 @@ useEffect(() => {
 
   return () => clearTimeout(delay);
 }, [search]);
-  useEffect(() => {
-  loadAnalytics();
-}, []);
-
+  
   // Reset page when filters change
 useEffect(() => {
   loadTasks();
