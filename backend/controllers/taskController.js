@@ -81,16 +81,23 @@ exports.deleteTask = async (req, res) => {
 
 // ANALYTICS
 exports.getAnalytics = async (req, res) => {
-  const tasks = await Task.find({ user: req.user.id });
+  try {
+    const total = await Task.countDocuments({ user: req.user.id });
 
-  const total = tasks.length;
-  const completed = tasks.filter(t => t.status === "Done").length;
-  const pending = total - completed;
+    const completed = await Task.countDocuments({
+      user: req.user.id,
+      status: { $in: ["Completed", "completed"] }
+    });
 
-  res.json({
-    total,
-    completed,
-    pending,
-    completionRate: total ? (completed / total) * 100 : 0
-  });
+    const pending = total - completed;
+
+    res.json({
+      total,
+      completed,
+      pending,
+      completionRate: total ? (completed / total) * 100 : 0
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
