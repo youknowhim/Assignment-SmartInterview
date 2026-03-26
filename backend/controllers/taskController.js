@@ -84,7 +84,7 @@ exports.getAnalytics = async (req, res) => {
   const tasks = await Task.find({ user: req.user.id });
 
   const total = tasks.length;
-  const completed = tasks.filter(t => t.status === "Completed").length;
+  const completed = tasks.filter(t => t.status === "Done").length;
   const pending = total - completed;
 
   res.json({
