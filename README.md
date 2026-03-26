@@ -92,6 +92,9 @@ Backend
   /middleware
 
 ---
+git commands
+git init 
+git clone https://github.com/youknowhim/Assignment-SmartInterview.git
 
 🔧 Backend Setup
 
