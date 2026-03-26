@@ -121,6 +121,7 @@ useEffect(() => {
       },
       body: JSON.stringify({ status: newStatus })
     });
+    
 
     // update UI without reloading
     setTasks(prev =>
@@ -128,6 +129,8 @@ useEffect(() => {
         t._id === task._id ? { ...t, status: newStatus } : t
       )
     );
+    loadTasks();
+    loadAnalytics();
 
   
 };
