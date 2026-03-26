@@ -12,9 +12,11 @@ const {
 const auth = require("../middleware/authMiddleware");
 
 router.post("/", auth, createTask);
+
+router.get("/analytics", auth, getAnalytics);
+
 router.get("/", auth, getTasks);
 router.put("/:id", auth, updateTask);
 router.delete("/:id", auth, deleteTask);
-router.get("/analytics", auth, getAnalytics);
 
 module.exports = router;
