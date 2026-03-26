@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const Base_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const Base_URL = "http://localhost:5000";
   const [sortBy, setSortBy] = useState("createdAt");
   const [order, setOrder] = useState("desc");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
+  localStorage.getItem("theme") === "dark"
+);
 
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
@@ -18,11 +18,11 @@ export default function Dashboard() {
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
   const [analytics, setAnalytics] = useState({
-    total: 0,
-    completed: 0,
-    pending: 0,
-    completionRate: 0
-  });
+  total: 0,
+  completed: 0,
+  pending: 0,
+  completionRate: 0
+});
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -30,63 +30,88 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Load Tasks
   const loadTasks = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      if (status) params.append("status", status);
-      if (priority) params.append("priority", priority);
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (status) params.append("status", status);
+    if (priority) params.append("priority", priority);
 
-      params.append("page", page);
-      params.append("limit", 6);
-      params.append("sortBy", sortBy);
-      params.append("order", order);
+    params.append("page", page);
+    params.append("limit", 6);
+    params.append("sortBy", sortBy);
+    params.append("order", order);
 
-      const res = await fetch(`${Base_URL}/api/tasks?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch tasks");
-
-      const data = await res.json();
-
-      let tasksData = data.tasks || [];
-
-      if (sortBy === "priority") {
-        const orderMap = { High: 3, Medium: 2, Low: 1 };
-
-        tasksData = tasksData.sort((a, b) =>
-          order === "asc"
-            ? orderMap[a.priority] - orderMap[b.priority]
-            : orderMap[b.priority] - orderMap[a.priority]
-        );
-      }
-
-      setTasks(tasksData);
-      setTotalPages(data.totalPages || 1);
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadAnalytics = async () => {
-    const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
+    const res = await fetch(`${Base_URL}/api/tasks?${params}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    const data = await res.json();
-    setAnalytics(data);
-  };
+    if (!res.ok) throw new Error("Failed to fetch tasks");
 
+  const data = await res.json();
+
+let tasksData = data.tasks || [];
+
+// Custom priority sort
+if (sortBy === "priority") {
+  const orderMap = { High: 3, Medium: 2, Low: 1 };
+
+  tasksData = tasksData.sort((a, b) =>
+    order === "asc"
+      ? orderMap[a.priority] - orderMap[b.priority]
+      : orderMap[b.priority] - orderMap[a.priority]
+  );
+}
+
+setTasks(tasksData);
+    setTotalPages(data.totalPages || 1);
+
+  } catch (err) {
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+//   dark mode toggle
+
+
+  // Debounced
+useEffect(() => {
+  const delay = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 2000); // 
+
+  return () => clearTimeout(delay);
+}, [search]);
+
+  // Reset page when filters change
+useEffect(() => {
+  loadTasks();
+}, [debouncedSearch, page, status, priority, sortBy, order]);
+  useEffect(()=>{
+    loadAnalytics();
+  },[])
+  
+
+  // Delete Task
+  const deleteTask = async (id) => {
+    try {
+      await fetch(`${Base_URL}/api/tasks/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      loadTasks();
+    } catch {
+      alert("Delete failed");
+    }
+  };
   const toggleStatus = async (task) => {
-    const newStatus =
-      task.status === "Completed" ? "Todo" : "Completed";
+    const newStatus = task.status === "Completed" ? "Todo" : "Completed";
 
     await fetch(`${Base_URL}/api/tasks/${task._id}`, {
       method: "PUT",
@@ -97,37 +122,27 @@ export default function Dashboard() {
       body: JSON.stringify({ status: newStatus })
     });
 
-    await Promise.all([loadTasks(), loadAnalytics()]);
-  };
+    // update UI without reloading
+    setTasks(prev =>
+      prev.map(t =>
+        t._id === task._id ? { ...t, status: newStatus } : t
+      )
+    );
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 2000);
+  
+};
+  const loadAnalytics = async () => {
 
-    return () => clearTimeout(delay);
-  }, [search]);
+    const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  useEffect(() => {
-    loadTasks();
-  }, [debouncedSearch, page, status, priority, sortBy, order]);
+    const data = await res.json();
+    setAnalytics(data);
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
+};
 
-  const deleteTask = async (id) => {
-    try {
-      await fetch(`${Base_URL}/api/tasks/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      await Promise.all([loadTasks(), loadAnalytics()]);
-    } catch {
-      alert("Delete failed");
-    }
-  };
-
+  // Logout
   const logout = () => {
     localStorage.clear();
     navigate("/login");
@@ -135,28 +150,31 @@ export default function Dashboard() {
 
   return (
     <div className={`dashboard ${darkMode ? "dark" : ""}`}>
-      <div className="analytics">
-        <div className="card-analytics">
-          <h4>Total Tasks</h4>
-          <p>{analytics.total}</p>
-        </div>
+        <div className="analytics">
+  <div className="card-analytics">
+    <h4>Total Tasks</h4>
+    <p>{analytics.total}</p>
+  </div>
 
-        <div className="card-analytics">
-          <h4>Completed</h4>
-          <p>{analytics.completed}</p>
-        </div>
+  <div className="card-analytics">
+    <h4>Completed</h4>
+    <p>{analytics.completed}</p>
+  </div>
 
-        <div className="card-analytics">
-          <h4>Pending</h4>
-          <p>{analytics.pending}</p>
-        </div>
+  <div className="card-analytics">
+    <h4>Pending</h4>
+    <p>{analytics.pending}</p>
+  </div>
 
-        <div className="card-analytics">
-          <h4>Completion %</h4>
-          <p>{analytics.completionRate?.toFixed(0) || 0}%</p>
-        </div>
-      </div>
+  <div className="card-analytics">
+    <h4>Completion %</h4>
+    <p>{analytics.completionRate.toFixed(0)}%</p>
+  </div>
+</div>
 
+   
+
+      {/* Header */}
       <header className="dashboard-header">
         <h2>Task Dashboard</h2>
 
@@ -165,28 +183,32 @@ export default function Dashboard() {
             + Add Task
           </button>
           <button onClick={logout}>Logout</button>
-          <button class="theme" onClick={() => {
-            setDarkMode(!darkMode);
-            localStorage.setItem("theme", !darkMode ? "dark" : "light");
+          <button class = "theme" onClick={() => {
+           setDarkMode(!darkMode);
+           localStorage.setItem("theme", !darkMode ? "dark" : "light");
           }}>
-            {darkMode ? "☀ Light" : "🌙 Dark"}
-          </button>
+          {darkMode ? "☀ Light" : "🌙 Dark"}
+  </button>
         </div>
       </header>
 
+      {/* Filters */}
       <div className="filters">
-        <select onChange={(e) => setSortBy(e.target.value)}>
-          <option value="createdAt">Sort by Created At</option>
-          <option value="dueDate">Sort by Due Date</option>
-          <option value="priority">Sort by Priority</option>
-        </select>
 
-        <select onChange={(e) => setOrder(e.target.value)}>
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
-        </select>
-      </div>
+  {/* Existing filters */}
 
+  <select onChange={(e) => setSortBy(e.target.value)}>
+    <option value="createdAt">Sort by Created At</option>
+    <option value="dueDate">Sort by Due Date</option>
+    <option value="priority">Sort by Priority</option>
+  </select>
+
+  <select onChange={(e) => setOrder(e.target.value)}>
+    <option value="desc">Descending</option>
+    <option value="asc">Ascending</option>
+  </select>
+
+</div>
       <div className="filters">
         <input
           placeholder="Search by title..."
@@ -209,9 +231,13 @@ export default function Dashboard() {
         </select>
       </div>
 
+      {/* Loading */}
       {loading && <p className="info">Loading tasks...</p>}
+
+      {/* Error */}
       {error && <p className="error">{error}</p>}
 
+      {/* Task List */}
       <div className="grid">
         {!loading && tasks.length === 0 && (
           <p className="info">No tasks found</p>
@@ -222,13 +248,13 @@ export default function Dashboard() {
             <h3>{t.title}</h3>
             <p><b>Description:</b> {t.description}</p>
             <label>
-              <input
-                type="checkbox"
-                checked={t.status === "Completed"}
-                onChange={() => toggleStatus(t)}
-              />
-              &nbsp;Mark as Completed
-            </label>
+  <input
+    type="checkbox"
+    checked={t.status === "Completed"}
+    onChange={() => toggleStatus(t)}
+  />
+  &nbsp;Mark as Completed
+</label>
 
             <p><b>Status:</b> {t.status}</p>
             <p><b>Priority:</b> {t.priority}</p>
@@ -253,6 +279,7 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Pagination */}
       <div className="pagination">
         <button
           disabled={page === 1}
@@ -272,6 +299,7 @@ export default function Dashboard() {
           Next ➡
         </button>
       </div>
+
     </div>
   );
 }
