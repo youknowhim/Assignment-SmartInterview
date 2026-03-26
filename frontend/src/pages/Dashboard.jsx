@@ -110,7 +110,18 @@ useEffect(() => {
       alert("Delete failed");
     }
   };
-  const toggleStatus = async (task) => {
+
+  const loadAnalytics = async () => {
+
+    const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    setAnalytics(data);
+
+};
+    const toggleStatus = async (task) => {
     const newStatus = task.status === "Completed" ? "Todo" : "Completed";
 
     await fetch(`${Base_URL}/api/tasks/${task._id}`, {
@@ -129,20 +140,9 @@ useEffect(() => {
         t._id === task._id ? { ...t, status: newStatus } : t
       )
     );
-    loadTasks();
     loadAnalytics();
 
   
-};
-  const loadAnalytics = async () => {
-
-    const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const data = await res.json();
-    setAnalytics(data);
-
 };
 
   // Logout
