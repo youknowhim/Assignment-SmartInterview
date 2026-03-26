@@ -94,13 +94,25 @@ exports.deleteTask = async (req, res) => {
 // ANALYTICS
 exports.getAnalytics = async (req, res) => {
   try {
-    const total = await Task.countDocuments({ user: req.user.id });
+    const result = await Task.aggregate([
+      {
+        $match: { user: req.user._id }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          completed: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "Completed"] }, 1, 0]
+            }
+          }
+        }
+      }
+    ]);
 
-    const completed = await Task.countDocuments({
-      user: req.user.id,
-      status: { $in: ["Completed", "completed"] }
-    });
-
+    const total = result[0]?.total || 0;
+    const completed = result[0]?.completed || 0;
     const pending = total - completed;
 
     res.json({
@@ -109,6 +121,7 @@ exports.getAnalytics = async (req, res) => {
       pending,
       completionRate: total ? (completed / total) * 100 : 0
     });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
