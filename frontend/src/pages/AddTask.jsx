@@ -104,7 +104,7 @@ export default function AddTask() {
         </select>
 
         <button disabled={loading}>
-          {loading ? "Updating..." : "Update Task"}
+          {loading ? "Adding..." : "Add Task"}
         </button>
       </form>
     </div>
