@@ -15,6 +15,7 @@ export default function AddTask() {
     priority: "High",
     status: "Todo"
   });
+  const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ export default function AddTask() {
     }
 
     try {
+      setLoading(true);
       const res = await fetch(`${Base_URL}/api/tasks`, {
         method: "POST",
         headers: {
@@ -40,6 +42,9 @@ export default function AddTask() {
 
     } catch (err) {
       alert(err.message);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -98,7 +103,9 @@ export default function AddTask() {
           <option>Completed</option>
         </select>
 
-        <button>Add Task</button>
+        <button disabled={loading}>
+          {loading ? "Updating..." : "Update Task"}
+        </button>
       </form>
     </div>
   );
