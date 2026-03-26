@@ -130,16 +130,27 @@ const toggleStatus = async (task) => {
   await loadAnalytics();
 };
   const loadAnalytics = async () => {
-
+  try {
     const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    if (!res.ok) throw new Error("Failed to fetch analytics");
+
     const data = await res.json();
-    setAnalytics(data);
 
+    // force fresh object reference (important for re-render)
+    setAnalytics({
+      total: data.total || 0,
+      completed: data.completed || 0,
+      pending: data.pending || 0,
+      completionRate: data.completionRate || 0
+    });
+
+  } catch (err) {
+    console.error("Analytics error:", err);
+  }
 };
-
   // Logout
   const logout = () => {
     localStorage.clear();
