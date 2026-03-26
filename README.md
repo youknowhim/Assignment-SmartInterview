@@ -91,10 +91,10 @@ Backend
   /routes
   /middleware
 
----
+---<br>
 git commands<br>
 git init<br>
-git clone https://github.com/youknowhim/Assignment-SmartInterview.git
+git clone https://github.com/youknowhim/Assignment-SmartInterview.git<br>
 
 🔧 Backend Setup
 
