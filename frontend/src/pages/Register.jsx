@@ -1,6 +1,6 @@
 import "../styles/auth.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,Link } from "react-router-dom";
 
 export default function Register() {
    const Base_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"; 
@@ -17,9 +17,12 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault();
-
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!form.name || !form.email || !form.password) {
       return setError("All fields are required");
+    }
+    else if (!regex.test(form.email)) {
+      return setError('Invalid email format');
     }
 
     try {
@@ -84,6 +87,9 @@ export default function Register() {
         <button type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Account"}
         </button>
+        <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Already a user? <Link to="/login">Login</Link>
+      </p>
       </form>
     </div>
   );

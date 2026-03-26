@@ -1,6 +1,6 @@
 import "../styles/auth.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , Link } from "react-router-dom";
 
 export default function Login() {
   const Base_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -60,6 +60,7 @@ export default function Login() {
     <div className="auth-container">
       <form className="auth-card" onSubmit={submit}>
         <h2>Login</h2>
+        {error && <p className="error">{error}</p>}
 
         <input
           type="email"
@@ -79,18 +80,15 @@ export default function Login() {
           }
         />
 
-        {error && <p className="error">{error}</p>}
+
 
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <button
-          type="button"
-          onClick={() => navigate("/register")}
-        >
-          New user? Register
-        </button>
+        <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New User? <Link to="/register">Register</Link>
+      </p>
       </form>
     </div>
   );
