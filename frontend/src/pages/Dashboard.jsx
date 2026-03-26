@@ -93,29 +93,9 @@ useEffect(() => {
 useEffect(() => {
   loadTasks();
 }, [debouncedSearch, page, status, priority, sortBy, order]);
-useEffect(() => {
-  const total = tasks.length;
-
-  const completed = tasks.filter(
-    t => t.status === "Completed"
-  ).length;
-
-  const pending = total - completed;
-
-  const completionRate = total
-    ? (completed / total) * 100
-    : 0;
-
-  setAnalytics({
-    total,
-    completed,
-    pending,
-    completionRate
-  });
-
-}, [tasks]);
-
-  
+  useEffect(() => {
+  loadAnalytics();
+}, []);
 
   // Delete Task
 const deleteTask = async (id) => {
@@ -125,6 +105,7 @@ const deleteTask = async (id) => {
   });
 
   await loadTasks();
+  await loadAnalytics();
 };
 const toggleStatus = async (task) => {
   const newStatus =
@@ -142,6 +123,28 @@ const toggleStatus = async (task) => {
 
   // 2. Fetch updated tasks (ensures DB write finished)
   await loadTasks();
+  await loadAnalytics();
+};
+  const loadAnalytics = async () => {
+  try {
+    const res = await fetch(`${Base_URL}/api/tasks/analytics`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch analytics");
+
+    const data = await res.json();
+
+    setAnalytics({
+      total: data.total || 0,
+      completed: data.completed || 0,
+      pending: data.pending || 0,
+      completionRate: data.completionRate || 0
+    });
+
+  } catch (err) {
+    console.error("Analytics error:", err);
+  }
 };
   // Logout
   const logout = () => {
